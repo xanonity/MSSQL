@@ -1,25 +1,25 @@
-USE DbName  -- устанавливаем текущую базу
-SET NOCOUNT ON; -- отключаем вывод количества возвращаемых строк, это несколько ускорит обработку
+USE DbName  -- СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј С‚РµРєСѓС‰СѓСЋ Р±Р°Р·Сѓ
+SET NOCOUNT ON; -- РѕС‚РєР»СЋС‡Р°РµРј РІС‹РІРѕРґ РєРѕР»РёС‡РµСЃС‚РІР° РІРѕР·РІСЂР°С‰Р°РµРјС‹С… СЃС‚СЂРѕРє, СЌС‚Рѕ РЅРµСЃРєРѕР»СЊРєРѕ СѓСЃРєРѕСЂРёС‚ РѕР±СЂР°Р±РѕС‚РєСѓ
 
-SET LOCK_TIMEOUT 20000 -- чтобы скрипт не висел бесконечно, если один из индексов заблокирован
+SET LOCK_TIMEOUT 20000 -- С‡С‚РѕР±С‹ СЃРєСЂРёРїС‚ РЅРµ РІРёСЃРµР» Р±РµСЃРєРѕРЅРµС‡РЅРѕ, РµСЃР»Рё РѕРґРёРЅ РёР· РёРЅРґРµРєСЃРѕРІ Р·Р°Р±Р»РѕРєРёСЂРѕРІР°РЅ
 
-DECLARE @FragLimit float = 3.0; -- начиная с какого порога начинаем обрабатывать индексы
---DECLARE @Mode nvarchar(130) = 'REORGANIZE'; -- для ежедневного обслуживания
-DECLARE @Mode nvarchar(130) = 'REBUILD '; -- для еженедельного обслуживания
+DECLARE @FragLimit float = 3.0; -- РЅР°С‡РёРЅР°СЏ СЃ РєР°РєРѕРіРѕ РїРѕСЂРѕРіР° РЅР°С‡РёРЅР°РµРј РѕР±СЂР°Р±Р°С‚С‹РІР°С‚СЊ РёРЅРґРµРєСЃС‹
+--DECLARE @Mode nvarchar(130) = 'REORGANIZE'; -- РґР»СЏ РµР¶РµРґРЅРµРІРЅРѕРіРѕ РѕР±СЃР»СѓР¶РёРІР°РЅРёСЏ
+DECLARE @Mode nvarchar(130) = 'REBUILD '; -- РґР»СЏ РµР¶РµРЅРµРґРµР»СЊРЅРѕРіРѕ РѕР±СЃР»СѓР¶РёРІР°РЅРёСЏ
 
-DECLARE @objectid int; -- ID объекта
-DECLARE @indexid int; -- ID индекса
-DECLARE @partitioncount bigint; -- количество секций если индекс секционирован
-DECLARE @schemaname nvarchar(130); -- имя схемы в которой находится таблица
-DECLARE @objectname nvarchar(130); -- имя таблицы 
-DECLARE @indexname nvarchar(130); -- имя индекса
-DECLARE @partitionnum bigint; -- номер секции
-DECLARE @frag float; -- процент фрагментации индекса
-DECLARE @command nvarchar(4000); -- инструкция T-SQL для дефрагментации либо ренидексации
+DECLARE @objectid int; -- ID РѕР±СЉРµРєС‚Р°
+DECLARE @indexid int; -- ID РёРЅРґРµРєСЃР°
+DECLARE @partitioncount bigint; -- РєРѕР»РёС‡РµСЃС‚РІРѕ СЃРµРєС†РёР№ РµСЃР»Рё РёРЅРґРµРєСЃ СЃРµРєС†РёРѕРЅРёСЂРѕРІР°РЅ
+DECLARE @schemaname nvarchar(130); -- РёРјСЏ СЃС…РµРјС‹ РІ РєРѕС‚РѕСЂРѕР№ РЅР°С…РѕРґРёС‚СЃСЏ С‚Р°Р±Р»РёС†Р°
+DECLARE @objectname nvarchar(130); -- РёРјСЏ С‚Р°Р±Р»РёС†С‹ 
+DECLARE @indexname nvarchar(130); -- РёРјСЏ РёРЅРґРµРєСЃР°
+DECLARE @partitionnum bigint; -- РЅРѕРјРµСЂ СЃРµРєС†РёРё
+DECLARE @frag float; -- РїСЂРѕС†РµРЅС‚ С„СЂР°РіРјРµРЅС‚Р°С†РёРё РёРЅРґРµРєСЃР°
+DECLARE @command nvarchar(4000); -- РёРЅСЃС‚СЂСѓРєС†РёСЏ T-SQL РґР»СЏ РґРµС„СЂР°РіРјРµРЅС‚Р°С†РёРё Р»РёР±Рѕ СЂРµРЅРёРґРµРєСЃР°С†РёРё
 
--- Отбор таблиц и индексов с помощью системного представления sys.dm_db_index_physical_stats
--- Отбор только тех объектов которые являются индексами (index_id > 0), 
--- фрагментация которых более @FragLimit и количество страниц в индексе более 128
+-- РћС‚Р±РѕСЂ С‚Р°Р±Р»РёС† Рё РёРЅРґРµРєСЃРѕРІ СЃ РїРѕРјРѕС‰СЊСЋ СЃРёСЃС‚РµРјРЅРѕРіРѕ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЏ sys.dm_db_index_physical_stats
+-- РћС‚Р±РѕСЂ С‚РѕР»СЊРєРѕ С‚РµС… РѕР±СЉРµРєС‚РѕРІ РєРѕС‚РѕСЂС‹Рµ СЏРІР»СЏСЋС‚СЃСЏ РёРЅРґРµРєСЃР°РјРё (index_id > 0), 
+-- С„СЂР°РіРјРµРЅС‚Р°С†РёСЏ РєРѕС‚РѕСЂС‹С… Р±РѕР»РµРµ @FragLimit Рё РєРѕР»РёС‡РµСЃС‚РІРѕ СЃС‚СЂР°РЅРёС† РІ РёРЅРґРµРєСЃРµ Р±РѕР»РµРµ 128
 SELECT
     object_id AS objectid,
     index_id AS indexid,
@@ -29,13 +29,13 @@ INTO #work_to_do
 FROM sys.dm_db_index_physical_stats (DB_ID(), null, null, null, 'DETAILED')
 WHERE avg_fragmentation_in_percent >= @FragLimit AND index_id > 0 AND page_count > 128;
 
--- Объявление курсора для чтения секций
+-- РћР±СЉСЏРІР»РµРЅРёРµ РєСѓСЂСЃРѕСЂР° РґР»СЏ С‡С‚РµРЅРёСЏ СЃРµРєС†РёР№
 DECLARE partitions CURSOR FOR SELECT * FROM #work_to_do;
 
--- Открытие курсора
+-- РћС‚РєСЂС‹С‚РёРµ РєСѓСЂСЃРѕСЂР°
 OPEN partitions;
 
--- Цикл по секциям
+-- Р¦РёРєР» РїРѕ СЃРµРєС†РёСЏРј
 WHILE (1=1)
     BEGIN;
         FETCH NEXT
@@ -43,7 +43,7 @@ WHILE (1=1)
            INTO @objectid, @indexid, @partitionnum, @frag;
         IF @@FETCH_STATUS < 0 BREAK;
 		
--- Собираем имена объектов по ID		
+-- РЎРѕР±РёСЂР°РµРј РёРјРµРЅР° РѕР±СЉРµРєС‚РѕРІ РїРѕ ID		
         SELECT @objectname = QUOTENAME(o.name), @schemaname = QUOTENAME(s.name)
         FROM sys.objects AS o
         JOIN sys.schemas as s ON s.schema_id = o.schema_id
@@ -70,10 +70,10 @@ IF @Mode = 'REBUILD'
         PRINT N'Executed: ' + @command;
     END;
 
--- Закрытие курсора
+-- Р—Р°РєСЂС‹С‚РёРµ РєСѓСЂСЃРѕСЂР°
 CLOSE partitions;
 DEALLOCATE partitions;
 
--- Удаление временной таблицы
+-- РЈРґР°Р»РµРЅРёРµ РІСЂРµРјРµРЅРЅРѕР№ С‚Р°Р±Р»РёС†С‹
 DROP TABLE #work_to_do;
 GO
