@@ -17,7 +17,7 @@ SELECT
 	--	when 3 then 'Repeatable'
 	--	when 4 then 'Serializable'
 	--	when 5 then 'Snapshot'
-	--end УровеньИзоляции,
+	--end РЈСЂРѕРІРµРЅСЊРР·РѕР»СЏС†РёРё,
     a.wait_time,
     a.wait_type,
     a.last_wait_type,
@@ -25,12 +25,12 @@ SELECT
     a.total_elapsed_time,
     st.text,
     qp.query_plan,
-	p.loginame [loginame сессии вызвавшей блокировку],
-	p.program_name [Приложение сессии вызвавшей блокировку],
-	p.login_time [Время входа сессии вызвавшей блокировку],
-	p.last_batch [Время последнего запроса сессии вызвавшей блокировку],
-	p.hostname [Host Name сессии вызвавшей блокировку],
-	stblock.text [Текущий(!) запрос сессии вызвавшей блокировку]
+	p.loginame [loginame СЃРµСЃСЃРёРё РІС‹Р·РІР°РІС€РµР№ Р±Р»РѕРєРёСЂРѕРІРєСѓ],
+	p.program_name [РџСЂРёР»РѕР¶РµРЅРёРµ СЃРµСЃСЃРёРё РІС‹Р·РІР°РІС€РµР№ Р±Р»РѕРєРёСЂРѕРІРєСѓ],
+	p.login_time [Р’СЂРµРјСЏ РІС…РѕРґР° СЃРµСЃСЃРёРё РІС‹Р·РІР°РІС€РµР№ Р±Р»РѕРєРёСЂРѕРІРєСѓ],
+	p.last_batch [Р’СЂРµРјСЏ РїРѕСЃР»РµРґРЅРµРіРѕ Р·Р°РїСЂРѕСЃР° СЃРµСЃСЃРёРё РІС‹Р·РІР°РІС€РµР№ Р±Р»РѕРєРёСЂРѕРІРєСѓ],
+	p.hostname [Host Name СЃРµСЃСЃРёРё РІС‹Р·РІР°РІС€РµР№ Р±Р»РѕРєРёСЂРѕРІРєСѓ],
+	stblock.text [РўРµРєСѓС‰РёР№(!) Р·Р°РїСЂРѕСЃ СЃРµСЃСЃРёРё РІС‹Р·РІР°РІС€РµР№ Р±Р»РѕРєРёСЂРѕРІРєСѓ]
 
 FROM sys.dm_exec_requests a
     OUTER APPLY sys.dm_exec_sql_text(a.sql_handle) AS st
