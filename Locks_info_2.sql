@@ -24,7 +24,7 @@ select
 from 
 	_123 with (index(PK___123__AAAC09D87EC4F8B2) nolock)
 where 
-	%%lockres%% like '%40fd182c0dd9%' -- взять из скрипта выше, resourse_description
+	%%lockres%% like '%40fd182c0dd9%' -- РІР·СЏС‚СЊ РёР· СЃРєСЂРёРїС‚Р° РІС‹С€Рµ, resourse_description
 --(ad3225e45be9)                                                                                                                                                                                                                                                  
 -- (24342061670f)                                                                                                                                                                                                                                                  
 -- (40fd182c0dd9)                                                                                                                                                                                                                                                  
