@@ -4,13 +4,14 @@ select Batch_Text = ISNULL(cast(object_name(st.objectid, st.dbid) as nvarchar(ma
 										THEN LEN(CONVERT (NVARCHAR (MAX), text)) * 2 
 										ELSE statement_end_offset END - statement_start_offset) / 2))
 	, q.*
-	, qp.query_plan, Database_id = st.dbid, Object_id = st.objectid
+	, qp.query_plan, Database_id = qp.dbid, Object_id = st.objectid
 from
 (select TOP 30 qs.query_hash, qs.query_plan_hash, statement_start_offset, statement_end_offset
 	, LastRequest = max(last_execution_time)
 	, Query_Count = count(1), Executions = SUM(execution_count)
 	, TotalCPU = SUM(total_worker_time), MinCPU = min(min_worker_time), MaxCPU = max(max_worker_time), AvgCPU = sum(total_worker_time) / sum(execution_count)
 	, Reads = SUM(total_logical_reads), MinReads = min(min_logical_reads), MaxReads = max(max_logical_reads), AvgReads = sum(total_logical_reads) / sum(execution_count)
+ 	, Writes = SUM(total_logical_writes), MinWrites = min(min_logical_writes), MaxWrites = max(max_logical_writes), AvgWrites = sum(total_logical_writes) / sum(execution_count)
 	, Duration = SUM(total_elapsed_time), MinDuration = min(min_elapsed_time), MaxDuration = max(max_elapsed_time), AvgDuration = sum(total_elapsed_time) / sum(execution_count)
 	, sql_handle = max(sql_handle)
 	, plan_handle = max(plan_handle)
