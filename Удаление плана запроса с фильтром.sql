@@ -1,4 +1,4 @@
--- удалить планы по определенной таблице или запросу
+
 SELECT distinct
 	'DBCC FREEPROCCACHE(',
 	cp.plan_handle,
