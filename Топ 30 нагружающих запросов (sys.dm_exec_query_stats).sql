@@ -11,6 +11,7 @@ from
 	, Query_Count = count(1), Executions = SUM(execution_count)
 	, TotalCPU = SUM(total_worker_time), MinCPU = min(min_worker_time), MaxCPU = max(max_worker_time), AvgCPU = sum(total_worker_time) / sum(execution_count)
 	, Reads = SUM(total_logical_reads), MinReads = min(min_logical_reads), MaxReads = max(max_logical_reads), AvgReads = sum(total_logical_reads) / sum(execution_count)
+ 	, PhysReads = SUM(total_physical_reads), MinPhysReads = min(min_physical_reads), MaxPhysReads = max(max_physical_reads), AvgPhysReads = sum(total_physical_reads) / sum(execution_count)
  	, Writes = SUM(total_logical_writes), MinWrites = min(min_logical_writes), MaxWrites = max(max_logical_writes), AvgWrites = sum(total_logical_writes) / sum(execution_count)
 	, Duration = SUM(total_elapsed_time), MinDuration = min(min_elapsed_time), MaxDuration = max(max_elapsed_time), AvgDuration = sum(total_elapsed_time) / sum(execution_count)
 	, sql_handle = max(sql_handle)
