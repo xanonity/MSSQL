@@ -37,8 +37,8 @@ where database_id = @dbid
 and objectproperty(s.object_id,'IsUserTable') = 1
 and i.object_id = s.object_id
 and i.index_id = s.index_id
-AND i.is_primary_key = 0		--исключаем Primary Key
-AND i.is_unique_constraint = 0	--исключаем Constraints
+AND i.is_primary_key = 0		--ГЁГ±ГЄГ«ГѕГ·Г ГҐГ¬ Primary Key
+AND i.is_unique_constraint = 0	--ГЁГ±ГЄГ«ГѕГ·Г ГҐГ¬ Constraints
 --and object_name(s.object_id) = 'MyBigTable'
 order by [%] asc
 
