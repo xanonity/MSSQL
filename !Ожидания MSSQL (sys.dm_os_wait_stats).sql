@@ -1,3 +1,5 @@
+-- DBCC SQLPERF ('sys.dm_os_wait_stats', CLEAR);
+
 WITH [Waits] AS
     (SELECT
         [wait_type],
