@@ -44,7 +44,7 @@ Use DbName;
 SELECT 
     sys.fn_PhysLocFormatter (%%physloc%%),
     *
-FROM Sales.OrderLines (NOLOCK)
+FROM TableName (NOLOCK)
 WHERE sys.fn_PhysLocFormatter (%%physloc%%) like '(3:70133%';
     
     
