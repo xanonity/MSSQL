@@ -38,13 +38,13 @@ FROM (
 		event_data.value('(event/@name)[1]', 'nvarchar(max)') AS name,
 		event_data.value('(event/@timestamp)[1]', 'datetime') AS timestamp,
 		event_data.value('(event/data[@name="cpu_time"])[1]', 'bigint') AS cpu_time,
-		event_data.value('(event/data[@name="database_id"])[1]', 'int') AS database_id,
-		event_data.value('(event/data[@name="database_name"])[1]', 'nvarchar(max)') AS database_name,
+		event_data.value('(event/action[@name="database_id"])[1]', 'int') AS database_id,
+		event_data.value('(event/action[@name="database_name"])[1]', 'nvarchar(max)') AS database_name,
 		event_data.value('(event/data[@name="duration"])[1]', 'bigint') AS duration,
 		event_data.value('(event/data[@name="logical_reads"])[1]', 'bigint') AS logical_reads,
 		event_data.value('(event/data[@name="physical_reads"])[1]', 'bigint') AS physical_reads,
 		event_data.value('(event/data[@name="row_count"])[1]', 'bigint') AS row_count,
-		event_data.value('(event/data[@name="sql_text"])[1]', 'nvarchar(max)') AS sql_text,
+		event_data.value('(event/action[@name="sql_text"])[1]', 'nvarchar(max)') AS sql_text,
 		event_data.value('(event/data[@name="statement"])[1]', 'nvarchar(max)') AS statement,
 		event_data.value('(event/data[@name="writes"])[1]', 'bigint') AS writes
 
