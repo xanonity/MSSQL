@@ -1,3 +1,5 @@
+-- sp_lock [ [ @spid1 = ] 'session ID1' ] [ , [@spid2 = ] 'session ID2' ]
+
 select 
 l.request_type
 ,DB_NAME(l.resource_database_id)  as [DB_Name]
